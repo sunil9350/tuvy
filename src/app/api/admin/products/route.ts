@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
     const created = await prisma.product.create({
       data: { name, slug, blurb, price, tag, imageUrl, sortOrder, retailers },
     });
+    revalidatePath("/");
     return NextResponse.json(created, { status: 201 });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Create failed";
