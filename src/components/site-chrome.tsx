@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Home, LayoutGrid, Menu, ShoppingBag, Sparkles, X } from "lucide-react";
 import { InstagramIcon } from "@/components/instagram-icon";
 
@@ -18,6 +20,8 @@ function scrollToId(id: string) {
 }
 
 export function SiteChrome({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const isHome = pathname === "/";
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -33,37 +37,65 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
     <>
       <header className="sticky top-0 z-40 border-b border-border/80 bg-background/90 backdrop-blur-md">
         <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:h-16 sm:px-6 lg:px-8">
-          <a
-            href="#hero"
-            className="text-lg font-extrabold tracking-tight text-foreground sm:text-xl"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollToId("#hero");
-            }}
-          >
-            Tuvy
-          </a>
+          {isHome ? (
+            <a
+              href="#hero"
+              className="text-lg font-extrabold tracking-tight text-foreground sm:text-xl"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToId("#hero");
+              }}
+            >
+              Tuvy
+            </a>
+          ) : (
+            <Link
+              href="/"
+              className="text-lg font-extrabold tracking-tight text-foreground sm:text-xl"
+            >
+              Tuvy
+            </Link>
+          )}
           <nav
             className="hidden items-center gap-8 md:flex"
             aria-label="Primary"
           >
-            {navLinks.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                className="text-sm font-semibold text-muted transition hover:text-foreground"
-              >
-                {l.label}
-              </a>
-            ))}
+            {navLinks.map((l) =>
+              isHome ? (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  className="text-sm font-semibold text-muted transition hover:text-foreground"
+                >
+                  {l.label}
+                </a>
+              ) : (
+                <Link
+                  key={l.href}
+                  href={`/${l.href}`}
+                  className="text-sm font-semibold text-muted transition hover:text-foreground"
+                >
+                  {l.label}
+                </Link>
+              ),
+            )}
           </nav>
           <div className="flex items-center gap-2">
-            <a
-              href="#collection"
-              className="hidden rounded-2xl bg-brand px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-brand-hover md:inline-flex"
-            >
-              Shop now
-            </a>
+            {isHome ? (
+              <a
+                href="#collection"
+                className="hidden rounded-2xl bg-brand px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-brand-hover md:inline-flex"
+              >
+                Shop now
+              </a>
+            ) : (
+              <Link
+                href="/#collection"
+                className="hidden rounded-2xl bg-brand px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-brand-hover md:inline-flex"
+              >
+                Shop now
+              </Link>
+            )}
             <button
               type="button"
               className="inline-flex size-10 items-center justify-center rounded-2xl border border-border text-foreground md:hidden"
@@ -105,23 +137,44 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
               </button>
             </div>
             <nav className="flex flex-col gap-1" aria-label="Mobile">
-              {navLinks.map((l) => (
+              {navLinks.map((l) =>
+                isHome ? (
+                  <a
+                    key={l.href}
+                    href={l.href}
+                    className="rounded-2xl px-4 py-3 text-base font-semibold text-foreground hover:bg-background"
+                    onClick={() => setOpen(false)}
+                  >
+                    {l.label}
+                  </a>
+                ) : (
+                  <Link
+                    key={l.href}
+                    href={`/${l.href}`}
+                    className="rounded-2xl px-4 py-3 text-base font-semibold text-foreground hover:bg-background"
+                    onClick={() => setOpen(false)}
+                  >
+                    {l.label}
+                  </Link>
+                ),
+              )}
+              {isHome ? (
                 <a
-                  key={l.href}
-                  href={l.href}
-                  className="rounded-2xl px-4 py-3 text-base font-semibold text-foreground hover:bg-background"
+                  href="#hero"
+                  className="mt-4 rounded-2xl bg-brand px-4 py-3 text-center text-base font-bold text-white hover:bg-brand-hover"
                   onClick={() => setOpen(false)}
                 >
-                  {l.label}
+                  Shop now
                 </a>
-              ))}
-              <a
-                href="#hero"
-                className="mt-4 rounded-2xl bg-brand px-4 py-3 text-center text-base font-bold text-white hover:bg-brand-hover"
-                onClick={() => setOpen(false)}
-              >
-                Shop now
-              </a>
+              ) : (
+                <Link
+                  href="/#collection"
+                  className="mt-4 rounded-2xl bg-brand px-4 py-3 text-center text-base font-bold text-white hover:bg-brand-hover"
+                  onClick={() => setOpen(false)}
+                >
+                  Shop now
+                </Link>
+              )}
             </nav>
           </div>
         </div>
@@ -138,27 +191,32 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
           <BottomTab
             icon={<Home className="size-5" />}
             label="Home"
-            onClick={() => scrollToId("#hero")}
+            href={isHome ? undefined : "/#hero"}
+            onClick={isHome ? () => scrollToId("#hero") : undefined}
           />
           <BottomTab
             icon={<LayoutGrid className="size-5" />}
             label="Shop"
-            onClick={() => scrollToId("#collection")}
+            href={isHome ? undefined : "/#collection"}
+            onClick={isHome ? () => scrollToId("#collection") : undefined}
           />
           <BottomTab
             icon={<Sparkles className="size-5" />}
             label="Why"
-            onClick={() => scrollToId("#why")}
+            href={isHome ? undefined : "/#why"}
+            onClick={isHome ? () => scrollToId("#why") : undefined}
           />
           <BottomTab
             icon={<InstagramIcon className="size-5" aria-hidden />}
             label="Reels"
-            onClick={() => scrollToId("#social")}
+            href={isHome ? undefined : "/#social"}
+            onClick={isHome ? () => scrollToId("#social") : undefined}
           />
           <BottomTab
             icon={<ShoppingBag className="size-5" />}
             label="Bag"
-            onClick={() => scrollToId("#collection")}
+            href={isHome ? undefined : "/#collection"}
+            onClick={isHome ? () => scrollToId("#collection") : undefined}
           />
         </div>
       </nav>
@@ -169,20 +227,32 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
 function BottomTab({
   icon,
   label,
+  href,
   onClick,
 }: {
   icon: React.ReactNode;
   label: string;
-  onClick: () => void;
+  href?: string;
+  onClick?: () => void;
 }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] font-semibold text-muted"
-    >
+  const className =
+    "flex flex-1 flex-col items-center gap-0.5 py-2 text-[10px] font-semibold text-muted";
+  const inner = (
+    <>
       <span className="text-foreground">{icon}</span>
       {label}
+    </>
+  );
+  if (href) {
+    return (
+      <Link href={href} className={className}>
+        {inner}
+      </Link>
+    );
+  }
+  return (
+    <button type="button" onClick={onClick} className={className}>
+      {inner}
     </button>
   );
 }

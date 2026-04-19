@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 type Initial = {
   name: string;
@@ -9,7 +9,7 @@ type Initial = {
   blurb: string;
   price: string;
   tag: string;
-  imageUrl: string;
+  images: string[];
   sortOrder: number;
   retailersJson: string;
 };
@@ -26,18 +26,63 @@ export function ProductForm({
   defaultRetailersJson?: string;
 }) {
   const router = useRouter();
+  const fileRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState(initial?.name ?? "");
   const [slug, setSlug] = useState(initial?.slug ?? "");
   const [blurb, setBlurb] = useState(initial?.blurb ?? "");
   const [price, setPrice] = useState(initial?.price ?? "");
   const [tag, setTag] = useState(initial?.tag ?? "");
-  const [imageUrl, setImageUrl] = useState(initial?.imageUrl ?? "");
+  const [images, setImages] = useState<string[]>(() =>
+    initial?.images?.length ? [...initial.images] : [""],
+  );
   const [sortOrder, setSortOrder] = useState(String(initial?.sortOrder ?? 0));
   const [retailersJson, setRetailersJson] = useState(
     initial?.retailersJson ?? defaultRetailersJson ?? "{}",
   );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+
+  function addImageRow() {
+    setImages((s) => [...s, ""]);
+  }
+
+  function updateImageRow(i: number, v: string) {
+    setImages((s) => s.map((x, j) => (j === i ? v : x)));
+  }
+
+  function removeImageRow(i: number) {
+    setImages((s) => (s.length <= 1 ? [""] : s.filter((_, j) => j !== i)));
+  }
+
+  async function onPickFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files?.length) return;
+    setError(null);
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      for (const f of files) fd.append("file", f);
+      const res = await fetch("/api/admin/product-images", { method: "POST", body: fd });
+      const data = (await res.json().catch(() => ({}))) as { urls?: string[]; error?: string };
+      if (!res.ok) {
+        setError(data.error || "Upload failed");
+        return;
+      }
+      const urls = data.urls ?? [];
+      if (urls.length === 0) {
+        setError("No files saved");
+        return;
+      }
+      setImages((s) => {
+        const trimmed = s.map((x) => x.trim()).filter(Boolean);
+        return [...trimmed, ...urls, ""];
+      });
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -49,6 +94,7 @@ export function ProductForm({
       setError("Retailers must be valid JSON.");
       return;
     }
+    const imageList = images.map((s) => s.trim()).filter(Boolean);
     setLoading(true);
     try {
       const payload = {
@@ -57,7 +103,7 @@ export function ProductForm({
         blurb,
         price,
         tag,
-        imageUrl: imageUrl.trim() || null,
+        images: imageList,
         sortOrder: Number(sortOrder) || 0,
         retailers,
       };
@@ -100,6 +146,8 @@ export function ProductForm({
 
   const field =
     "mt-2 w-full rounded-2xl border border-border bg-background px-4 py-2.5 text-sm font-medium outline-none transition focus:ring-4 focus:ring-brand/15";
+  const fieldInline =
+    "w-full flex-1 rounded-2xl border border-border bg-background px-4 py-2.5 text-sm font-medium outline-none transition focus:ring-4 focus:ring-brand/15";
 
   return (
     <form onSubmit={submit} className="space-y-5">
@@ -129,10 +177,65 @@ export function ProductForm({
           <span className="text-xs font-extrabold uppercase tracking-wide text-muted">Badge</span>
           <input className={field} value={tag} onChange={(e) => setTag(e.target.value)} required />
         </label>
-        <label className="block sm:col-span-2">
-          <span className="text-xs font-extrabold uppercase tracking-wide text-muted">Image URL</span>
-          <input className={field} value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
-        </label>
+
+        <div className="block sm:col-span-2">
+          <span className="text-xs font-extrabold uppercase tracking-wide text-muted">
+            Product images
+          </span>
+          <p className="mt-1 text-xs font-medium text-muted">
+            Add multiple URLs (CDN) or upload files — order is left-to-right in the storefront gallery.
+            Uploads are saved under <code className="rounded bg-background px-1">/public/uploads/products/</code>{" "}
+            (fine for local/self-hosted; use a blob/S3 URL in production if you deploy serverless).
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              disabled={loading || uploading}
+              className="rounded-2xl border border-border bg-card px-4 py-2 text-sm font-bold text-foreground shadow-sm transition hover:bg-background disabled:opacity-50"
+            >
+              {uploading ? "Uploading…" : "Upload images"}
+            </button>
+            <button
+              type="button"
+              onClick={addImageRow}
+              disabled={loading}
+              className="rounded-2xl border border-dashed border-brand/40 bg-brand/[0.04] px-4 py-2 text-sm font-bold text-brand transition hover:bg-brand/10 disabled:opacity-50"
+            >
+              + Image URL row
+            </button>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
+              multiple
+              className="hidden"
+              onChange={onPickFiles}
+            />
+          </div>
+          <ul className="mt-3 space-y-2">
+            {images.map((row, i) => (
+              <li key={i} className="flex gap-2">
+                <input
+                  className={fieldInline}
+                  value={row}
+                  onChange={(e) => updateImageRow(i, e.target.value)}
+                  placeholder="https://… or path after upload"
+                  aria-label={`Image URL ${i + 1}`}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeImageRow(i)}
+                  disabled={loading}
+                  className="mt-0 shrink-0 rounded-2xl border border-border px-3 py-2 text-xs font-extrabold text-muted transition hover:border-red-200 hover:bg-red-50 hover:text-red-700 disabled:opacity-50"
+                >
+                  Remove
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+
         <label className="block sm:col-span-2">
           <span className="text-xs font-extrabold uppercase tracking-wide text-muted">Blurb</span>
           <textarea
@@ -163,7 +266,7 @@ export function ProductForm({
       <div className="flex flex-wrap gap-3">
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || uploading}
           className="rounded-2xl bg-brand px-5 py-2.5 text-sm font-extrabold text-white shadow-md transition hover:bg-brand-hover disabled:opacity-60"
         >
           {loading ? "Saving…" : "Save product"}

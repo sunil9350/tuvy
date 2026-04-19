@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { parseImagesFromBody } from "@/lib/product-images";
 import { slugify } from "@/lib/slug";
 
 function parseRetailers(input: unknown): string | undefined {
@@ -39,8 +40,8 @@ export async function PATCH(request: Request, ctx: Ctx) {
     const blurb = body.blurb !== undefined ? String(body.blurb).trim() : existing.blurb;
     const price = body.price !== undefined ? String(body.price).trim() : existing.price;
     const tag = body.tag !== undefined ? String(body.tag).trim() : existing.tag;
-    const imageUrl =
-      body.imageUrl !== undefined ? String(body.imageUrl).trim() || null : existing.imageUrl;
+    const images =
+      body.images !== undefined ? parseImagesFromBody(body.images) : existing.images;
     const sortOrder =
       body.sortOrder !== undefined && Number.isFinite(Number(body.sortOrder))
         ? Number(body.sortOrder)
@@ -50,9 +51,12 @@ export async function PATCH(request: Request, ctx: Ctx) {
 
     const updated = await prisma.product.update({
       where: { id },
-      data: { name, slug, blurb, price, tag, imageUrl, sortOrder, retailers },
+      data: { name, slug, blurb, price, tag, images, sortOrder, retailers },
     });
     revalidatePath("/");
+    revalidatePath("/products");
+    revalidatePath(`/products/${existing.slug}`);
+    revalidatePath(`/products/${updated.slug}`);
     return NextResponse.json(updated);
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Update failed";
@@ -66,8 +70,11 @@ export async function PATCH(request: Request, ctx: Ctx) {
 export async function DELETE(_request: Request, ctx: Ctx) {
   const { id } = await ctx.params;
   try {
+    const row = await prisma.product.findUnique({ where: { id }, select: { slug: true } });
     await prisma.product.delete({ where: { id } });
     revalidatePath("/");
+    revalidatePath("/products");
+    if (row?.slug) revalidatePath(`/products/${row.slug}`);
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Not found" }, { status: 404 });

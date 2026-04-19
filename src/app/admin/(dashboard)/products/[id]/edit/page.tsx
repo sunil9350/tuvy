@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
 import { ProductForm } from "@/components/admin/product-form";
+import { parseProductImages } from "@/lib/product-images";
+import { prisma } from "@/lib/prisma";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -34,7 +35,7 @@ export default async function EditProductPage({ params }: Props) {
             blurb: product.blurb,
             price: product.price,
             tag: product.tag,
-            imageUrl: product.imageUrl ?? "",
+            images: parseProductImages(product.images),
             sortOrder: product.sortOrder,
             retailersJson: retailersPretty,
           }}

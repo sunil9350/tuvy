@@ -10,9 +10,10 @@ import {
   UtensilsCrossed,
 } from "lucide-react";
 import { InstagramIcon } from "@/components/instagram-icon";
-import { ProductRetailers } from "@/components/product-retailers";
+import { StorefrontProductGrid } from "@/components/storefront-product-grid";
 import { getStorefrontProducts } from "@/lib/store-products";
 import { SiteChrome } from "@/components/site-chrome";
+import { SiteFooter } from "@/components/site-footer";
 
 const comparisons = [
   {
@@ -171,80 +172,14 @@ export default async function Home() {
                   commerce, and more in a new tab.
                 </p>
               </div>
-              <a
-                href="#collection"
+              <Link
+                href="/products"
                 className="hidden rounded-2xl border border-border bg-card px-5 py-2.5 text-sm font-bold text-foreground shadow-sm transition hover:bg-white sm:inline-flex"
               >
                 View all
-              </a>
+              </Link>
             </div>
-            {products.length === 0 ? (
-              <div className="mt-10 rounded-2xl border border-dashed border-border bg-card/60 p-10 text-center">
-                <p className="text-sm font-semibold text-foreground">
-                  Catalog updating soon.
-                </p>
-                <p className="mt-2 text-sm font-medium text-muted">
-                  New arrivals will appear here. Thank you for your patience.
-                </p>
-              </div>
-            ) : (
-              <div className="mt-10 grid gap-6 sm:grid-cols-3">
-                {products.map((p) => (
-                  <article
-                    key={p.id}
-                    className="group flex flex-col overflow-hidden rounded-2xl border border-border/90 bg-card shadow-md ring-1 ring-black/[0.03] transition-[box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:ring-brand/15"
-                  >
-                    <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
-                      {p.imageUrl ? (
-                        <>
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={p.imageUrl}
-                            alt={p.name}
-                            loading="lazy"
-                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform group-hover:scale-[1.08]"
-                          />
-                          <div
-                            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 to-transparent"
-                            aria-hidden
-                          />
-                        </>
-                      ) : (
-                        <div
-                          className="absolute inset-0 bg-gradient-to-br from-neutral-100 via-card to-neutral-100 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-transform group-hover:scale-[1.08]"
-                          aria-hidden
-                        />
-                      )}
-                      <span className="pointer-events-none absolute left-4 top-4 z-10 translate-y-1 rounded-2xl bg-brand px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wide text-white opacity-0 shadow-md ring-1 ring-black/10 transition duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100">
-                        10-Min Hack
-                      </span>
-                      <span className="absolute right-4 top-4 z-10 rounded-2xl bg-card/95 px-3 py-1 text-xs font-bold text-foreground shadow-sm ring-1 ring-border backdrop-blur-sm">
-                        {p.tag}
-                      </span>
-                    </div>
-                    <div className="flex flex-1 flex-col gap-3 p-5">
-                      <div className="flex items-start justify-between gap-3">
-                        <h3 className="text-lg font-extrabold leading-tight tracking-tight text-foreground">
-                          {p.name}
-                        </h3>
-                        <p className="shrink-0 rounded-2xl bg-background px-3 py-1 text-sm font-extrabold text-brand ring-1 ring-brand/15">
-                          {p.price}
-                        </p>
-                      </div>
-                      <p className="text-sm font-medium leading-relaxed text-muted">
-                        {p.blurb}
-                      </p>
-                      <div className="mt-1">
-                        <ProductRetailers
-                          productName={p.name}
-                          links={p.retailers}
-                        />
-                      </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            )}
+            <StorefrontProductGrid products={products} className="mt-10" />
           </div>
         </section>
 
@@ -382,25 +317,7 @@ export default async function Home() {
           </div>
         </section>
 
-        <footer className="border-t border-border bg-card py-10 md:py-12">
-          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-4 text-center sm:flex-row sm:text-left sm:px-6 lg:px-8">
-            <div>
-              <p className="text-lg font-extrabold">Tuvy</p>
-              <p className="mt-1 text-sm font-medium text-muted">
-                Make kitchen easy in 10 minutes.
-              </p>
-              <div className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm font-bold sm:justify-start">
-                <Link className="text-brand hover:underline" href="/blog">
-                  Blog
-                </Link>
-              </div>
-            </div>
-            <p className="text-xs font-medium text-muted">
-              © {new Date().getFullYear()} Tuvy. Marketplace links open in a new
-              tab.
-            </p>
-          </div>
-        </footer>
+        <SiteFooter />
       </main>
     </SiteChrome>
   );

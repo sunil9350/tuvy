@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="1200" viewBox="0 0 960 1200" role="img" aria-label="Dummy product photo placeholder">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff7ed"/>
+      <stop offset="55%" stop-color="#ffedd5"/>
+      <stop offset="100%" stop-color="#fed7aa"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#ff4f00" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#ff4f00" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="1200" fill="url(#bg)"/>
+  <ellipse cx="480" cy="420" rx="320" ry="260" fill="url(#glow)"/>
+  <rect x="280" y="380" width="400" height="280" rx="36" fill="#ffffff" fill-opacity="0.85" stroke="#ff4f00" stroke-opacity="0.25" stroke-width="3"/>
+  <rect x="340" y="460" width="280" height="18" rx="9" fill="#ff4f00" fill-opacity="0.2"/>
+  <rect x="340" y="500" width="200" height="14" rx="7" fill="#737373" fill-opacity="0.25"/>
+  <rect x="340" y="530" width="240" height="14" rx="7" fill="#737373" fill-opacity="0.18"/>
+  <text x="480" y="820" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="28" font-weight="800" fill="#0f0f0f" letter-spacing="0.08em">DUMMY IMAGE</text>
+  <text x="480" y="865" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="17" font-weight="600" fill="#737373">Replace in admin with a real photo</text>
+  <text x="480" y="1020" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="14" font-weight="700" fill="#ff4f00" letter-spacing="0.28em">TUVY ù PLACEHOLDER</text>
+</svg>

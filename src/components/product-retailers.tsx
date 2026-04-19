@@ -97,7 +97,7 @@ export function ProductRetailers({ productName, links }: ProductRetailersProps) 
   const onlyQuick = !showPrimary && showQuick;
 
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-brand/15 bg-gradient-to-br from-brand/[0.07] via-orange-50/40 to-background p-3 shadow-inner ring-1 ring-black/[0.03]">
+    <div className="relative min-w-0 overflow-hidden rounded-2xl border border-brand/15 bg-gradient-to-br from-brand/[0.07] via-orange-50/40 to-background p-3 shadow-inner ring-1 ring-black/[0.03]">
       <div
         className="pointer-events-none absolute -right-8 -top-10 size-32 rounded-full bg-brand/10 blur-2xl"
         aria-hidden
@@ -116,7 +116,7 @@ export function ProductRetailers({ productName, links }: ProductRetailersProps) 
 
       {showPrimary && (
         <div
-          className={`relative grid gap-2 ${primary.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}
+          className={`relative grid min-w-0 gap-2 ${primary.length === 1 ? "grid-cols-1" : "grid-cols-2"}`}
         >
           {primary.map((r) => (
             <a
@@ -149,7 +149,7 @@ export function ProductRetailers({ productName, links }: ProductRetailersProps) 
               Pick a store
             </p>
           )}
-          <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory [&::-webkit-scrollbar]:hidden">
+          <div className="flex min-w-0 gap-2 overflow-x-auto overscroll-x-contain pb-1 [-ms-overflow-style:none] [scrollbar-width:none] snap-x snap-mandatory touch-pan-x [&::-webkit-scrollbar]:hidden">
             {(onlyQuick ? resolved : quick).map((r) => (
               <a
                 key={r.id}

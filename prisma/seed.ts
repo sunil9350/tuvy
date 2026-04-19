@@ -2,6 +2,9 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+/** Local SVG for layout / OG tests; two entries on first product demo horizontal gallery. */
+const DUMMY_PRODUCT_IMAGE = "/placeholders/product-dummy.svg";
+
 function marketplaceLinks(slug: string) {
   const q = encodeURIComponent(`Tuvy ${slug}`);
   return {
@@ -26,6 +29,7 @@ async function main() {
       price: "₹1,299",
       tag: "Bestseller",
       sortOrder: 0,
+      images: JSON.stringify([DUMMY_PRODUCT_IMAGE, DUMMY_PRODUCT_IMAGE]),
       retailers: JSON.stringify(marketplaceLinks("Chopper")),
     },
     {
@@ -35,6 +39,7 @@ async function main() {
       price: "₹899",
       tag: "New",
       sortOrder: 1,
+      images: JSON.stringify([DUMMY_PRODUCT_IMAGE]),
       retailers: JSON.stringify(marketplaceLinks("Oil Sprayer")),
     },
     {
@@ -44,6 +49,7 @@ async function main() {
       price: "₹649",
       tag: "Top rated",
       sortOrder: 2,
+      images: JSON.stringify([DUMMY_PRODUCT_IMAGE]),
       retailers: JSON.stringify(marketplaceLinks("Storage Box")),
     },
     {
@@ -53,6 +59,7 @@ async function main() {
       price: "₹499",
       tag: "Essential",
       sortOrder: 3,
+      images: JSON.stringify([DUMMY_PRODUCT_IMAGE]),
       retailers: JSON.stringify(marketplaceLinks("Cleaning Tool")),
     },
   ];
@@ -67,6 +74,7 @@ async function main() {
         price: p.price,
         tag: p.tag,
         sortOrder: p.sortOrder,
+        images: p.images,
         retailers: p.retailers,
       },
     });
