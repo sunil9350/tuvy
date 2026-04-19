@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { slugify } from "@/lib/slug";
@@ -51,6 +52,7 @@ export async function PATCH(request: Request, ctx: Ctx) {
       where: { id },
       data: { name, slug, blurb, price, tag, imageUrl, sortOrder, retailers },
     });
+    revalidatePath("/");
     return NextResponse.json(updated);
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Update failed";
@@ -65,6 +67,7 @@ export async function DELETE(_request: Request, ctx: Ctx) {
   const { id } = await ctx.params;
   try {
     await prisma.product.delete({ where: { id } });
+    revalidatePath("/");
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
