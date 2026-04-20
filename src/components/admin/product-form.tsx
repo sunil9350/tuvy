@@ -63,8 +63,14 @@ export function ProductForm({
     try {
       const fd = new FormData();
       for (const f of files) fd.append("file", f);
-      const res = await fetch("/api/admin/product-images", { method: "POST", body: fd });
-      const data = (await res.json().catch(() => ({}))) as { urls?: string[]; error?: string };
+      const res = await fetch("/api/admin/product-images", {
+        method: "POST",
+        body: fd,
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        urls?: string[];
+        error?: string;
+      };
       if (!res.ok) {
         setError(data.error || "Upload failed");
         return;
@@ -108,7 +114,9 @@ export function ProductForm({
         retailers,
       };
       const url =
-        mode === "create" ? "/api/admin/products" : `/api/admin/products/${productId}`;
+        mode === "create"
+          ? "/api/admin/products"
+          : `/api/admin/products/${productId}`;
       const res = await fetch(url, {
         method: mode === "create" ? "POST" : "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -131,7 +139,9 @@ export function ProductForm({
     if (!window.confirm("Delete this product? This cannot be undone.")) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/products/${productId}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/products/${productId}`, {
+        method: "DELETE",
+      });
       if (!res.ok) {
         const data = (await res.json().catch(() => ({}))) as { error?: string };
         setError(data.error || "Delete failed");
@@ -153,15 +163,30 @@ export function ProductForm({
     <form onSubmit={submit} className="space-y-5">
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block sm:col-span-2">
-          <span className="text-xs font-extrabold uppercase tracking-wide text-muted">Name</span>
-          <input className={field} value={name} onChange={(e) => setName(e.target.value)} required />
+          <span className="text-xs font-extrabold uppercase tracking-wide text-muted">
+            Name
+          </span>
+          <input
+            className={field}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
         </label>
         <label className="block">
-          <span className="text-xs font-extrabold uppercase tracking-wide text-muted">Slug</span>
-          <input className={field} value={slug} onChange={(e) => setSlug(e.target.value)} />
+          <span className="text-xs font-extrabold uppercase tracking-wide text-muted">
+            Slug
+          </span>
+          <input
+            className={field}
+            value={slug}
+            onChange={(e) => setSlug(e.target.value)}
+          />
         </label>
         <label className="block">
-          <span className="text-xs font-extrabold uppercase tracking-wide text-muted">Sort order</span>
+          <span className="text-xs font-extrabold uppercase tracking-wide text-muted">
+            Sort order
+          </span>
           <input
             className={field}
             type="number"
@@ -170,12 +195,26 @@ export function ProductForm({
           />
         </label>
         <label className="block">
-          <span className="text-xs font-extrabold uppercase tracking-wide text-muted">Price</span>
-          <input className={field} value={price} onChange={(e) => setPrice(e.target.value)} required />
+          <span className="text-xs font-extrabold uppercase tracking-wide text-muted">
+            Price
+          </span>
+          <input
+            className={field}
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            required
+          />
         </label>
         <label className="block">
-          <span className="text-xs font-extrabold uppercase tracking-wide text-muted">Badge</span>
-          <input className={field} value={tag} onChange={(e) => setTag(e.target.value)} required />
+          <span className="text-xs font-extrabold uppercase tracking-wide text-muted">
+            Badge
+          </span>
+          <input
+            className={field}
+            value={tag}
+            onChange={(e) => setTag(e.target.value)}
+            required
+          />
         </label>
 
         <div className="block sm:col-span-2">
@@ -183,9 +222,13 @@ export function ProductForm({
             Product images
           </span>
           <p className="mt-1 text-xs font-medium text-muted">
-            Add multiple URLs (CDN) or upload files — order is left-to-right in the storefront gallery.
-            Uploads are saved under <code className="rounded bg-background px-1">/public/uploads/products/</code>{" "}
-            (fine for local/self-hosted; use a blob/S3 URL in production if you deploy serverless).
+            Add multiple URLs (CDN) or upload files — order is left-to-right in
+            the storefront gallery. Uploads are saved under{" "}
+            <code className="rounded bg-background px-1">
+              /public/uploads/products/
+            </code>{" "}
+            (fine for local/self-hosted; use a blob/S3 URL in production if you
+            deploy serverless).
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <button
@@ -237,7 +280,9 @@ export function ProductForm({
         </div>
 
         <label className="block sm:col-span-2">
-          <span className="text-xs font-extrabold uppercase tracking-wide text-muted">Blurb</span>
+          <span className="text-xs font-extrabold uppercase tracking-wide text-muted">
+            Blurb
+          </span>
           <textarea
             className={`${field} min-h-[88px]`}
             value={blurb}
@@ -267,7 +312,7 @@ export function ProductForm({
         <button
           type="submit"
           disabled={loading || uploading}
-          className="rounded-2xl bg-brand px-5 py-2.5 text-sm font-extrabold text-white shadow-md transition hover:bg-brand-hover disabled:opacity-60"
+          className="rounded-2xl bg-brand px-5 py-2.5 text-sm font-extrabold text-white shadow-md transition hover:bg-brand-hover disabled:opacity-60 cursor-pointer"
         >
           {loading ? "Saving…" : "Save product"}
         </button>
@@ -276,7 +321,7 @@ export function ProductForm({
             type="button"
             onClick={remove}
             disabled={loading}
-            className="rounded-2xl border border-red-200 bg-red-50 px-5 py-2.5 text-sm font-extrabold text-red-700 transition hover:bg-red-100 disabled:opacity-60"
+            className="rounded-2xl border border-red-200 bg-red-50 px-5 py-2.5 text-sm font-extrabold text-red-700 transition hover:bg-red-100 disabled:opacity-60 cursor-pointer"
           >
             Delete
           </button>
