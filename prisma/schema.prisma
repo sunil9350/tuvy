@@ -14,7 +14,7 @@ model Product {
   blurb      String
   price      String
   tag        String
-  imageUrl   String?
+  images     String   @default("[]") // JSON: string[] image URLs (order = gallery)
   retailers  String   // JSON: RetailerLinks
   sortOrder  Int      @default(0)
   createdAt  DateTime @default(now())

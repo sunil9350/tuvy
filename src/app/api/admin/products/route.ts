@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { parseImagesFromBody } from "@/lib/product-images";
 import { slugify } from "@/lib/slug";
 
 function parseRetailers(input: unknown): string {
@@ -33,14 +34,16 @@ export async function POST(request: Request) {
     if (!blurb || !price || !tag) {
       return NextResponse.json({ error: "blurb, price, tag are required" }, { status: 400 });
     }
-    const imageUrl = body.imageUrl ? String(body.imageUrl).trim() || null : null;
+    const images = parseImagesFromBody(body.images ?? []);
     const sortOrder = Number.isFinite(Number(body.sortOrder)) ? Number(body.sortOrder) : 0;
     const retailers = parseRetailers(body.retailers ?? "{}");
 
     const created = await prisma.product.create({
-      data: { name, slug, blurb, price, tag, imageUrl, sortOrder, retailers },
+      data: { name, slug, blurb, price, tag, images, sortOrder, retailers },
     });
     revalidatePath("/");
+    revalidatePath("/products");
+    revalidatePath(`/products/${created.slug}`);
     return NextResponse.json(created, { status: 201 });
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Create failed";

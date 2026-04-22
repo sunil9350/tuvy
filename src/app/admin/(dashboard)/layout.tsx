@@ -9,12 +9,18 @@ const links = [
   { href: "/", label: "Storefront" },
 ] as const;
 
-export default function AdminDashboardLayout({ children }: { children: React.ReactNode }) {
+export default function AdminDashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4 py-8 md:flex-row md:gap-10 md:px-6 lg:px-8">
       <aside className="shrink-0 md:w-52">
         <p className="text-lg font-extrabold tracking-tight">Tuvy</p>
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted">Admin</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+          Admin
+        </p>
         <nav className="mt-6 flex flex-row flex-wrap gap-2 md:flex-col md:gap-1">
           {links.map((l) => (
             <Link
