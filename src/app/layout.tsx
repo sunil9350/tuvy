@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { OptionalProfileModal } from "@/components/optional-profile-modal";
+import { syncStorefrontUserEngagement } from "@/lib/storefront-user";
 import "./globals.css";
 
 const inter = Inter({
@@ -20,14 +22,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  await syncStorefrontUserEngagement();
   return (
     <html lang="en" className={`${inter.variable} h-full scroll-smooth antialiased`}>
-      <body className="min-h-full bg-background text-foreground">{children}</body>
+      <body className="min-h-full bg-background text-foreground">
+        {children}
+        <OptionalProfileModal />
+      </body>
     </html>
   );
 }

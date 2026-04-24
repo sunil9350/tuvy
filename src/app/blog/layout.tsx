@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { UserAccountNav } from "@/components/user-account-nav";
 
 export default function BlogLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -8,9 +9,12 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
           <Link href="/" className="text-sm font-extrabold text-brand hover:underline">
             ← Tuvy store
           </Link>
-          <Link href="/blog" className="text-sm font-bold text-muted hover:text-foreground">
-            All posts
-          </Link>
+          <div className="flex items-center gap-3">
+            <UserAccountNav />
+            <Link href="/blog" className="text-sm font-bold text-muted hover:text-foreground">
+              All posts
+            </Link>
+          </div>
         </div>
       </header>
       {children}

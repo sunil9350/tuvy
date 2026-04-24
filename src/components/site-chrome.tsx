@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, LayoutGrid, Menu, ShoppingBag, Sparkles, X } from "lucide-react";
 import { InstagramIcon } from "@/components/instagram-icon";
+import { UserAccountNav } from "@/components/user-account-nav";
 
 const navLinks = [
   { href: "#compare", label: "Old vs Tuvy" },
@@ -81,21 +82,9 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
             )}
           </nav>
           <div className="flex items-center gap-2">
-            {isHome ? (
-              <a
-                href="#collection"
-                className="hidden rounded-2xl bg-brand px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-brand-hover md:inline-flex"
-              >
-                Shop now
-              </a>
-            ) : (
-              <Link
-                href="/#collection"
-                className="hidden rounded-2xl bg-brand px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-brand-hover md:inline-flex"
-              >
-                Shop now
-              </Link>
-            )}
+            <div className="shrink-0">
+              <UserAccountNav />
+            </div>
             <button
               type="button"
               className="inline-flex size-10 items-center justify-center rounded-2xl border border-border text-foreground md:hidden"
@@ -157,23 +146,6 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
                     {l.label}
                   </Link>
                 ),
-              )}
-              {isHome ? (
-                <a
-                  href="#hero"
-                  className="mt-4 rounded-2xl bg-brand px-4 py-3 text-center text-base font-bold text-white hover:bg-brand-hover"
-                  onClick={() => setOpen(false)}
-                >
-                  Shop now
-                </a>
-              ) : (
-                <Link
-                  href="/#collection"
-                  className="mt-4 rounded-2xl bg-brand px-4 py-3 text-center text-base font-bold text-white hover:bg-brand-hover"
-                  onClick={() => setOpen(false)}
-                >
-                  Shop now
-                </Link>
               )}
             </nav>
           </div>

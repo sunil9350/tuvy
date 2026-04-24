@@ -35,3 +35,40 @@ model BlogPost {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 }
+
+/// End-user (storefront) identity — Auth0 (Google) or phone + OTP. Admin auth stays separate.
+model User {
+  id     String   @id @default(cuid())
+  /// Auth0 `sub` claim, when the user signed in with Google (via Auth0)
+  auth0Sub  String? @unique
+  /// E.164, e.g. +9198..., when the user signed in with phone
+  phoneE164 String? @unique
+
+  name         String?
+  email        String?
+  dateOfBirth  DateTime?
+
+  /// Last time we recorded engagement (e.g. ping)
+  lastSeenAt DateTime?
+
+  /// User dismissed the optional details form
+  profileDismissedAt   DateTime?
+  /// User saved the profile form at least once
+  profileFormSavedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Short-lived phone OTP (hashed) for sign-in; cleaned up on success or expiry.
+model PhoneOtp {
+  id        String   @id @default(cuid())
+  phoneE164 String
+  codeHash  String
+  expiresAt DateTime
+  /// Wrong-code attempts for this code row (max 5 then invalidate)
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([phoneE164, expiresAt])
+}
